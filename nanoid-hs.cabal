@@ -1,0 +1,16 @@
+name:                nanoid-hs
+version:             0.1.0.0
+synopsis:            Haskell port of nanoid pakcage
+homepage:            https://github.com/4e6/nanoid-hs#readme
+license:             MIT
+license-file:        LICENSE
+author:              Dmitry Bushev
+maintainer:          bushevdv@gmail.com
+category:            System
+build-type:          Simple
+extra-source-files:  ChangeLog.md
+cabal-version:       >=1.10
+
+library
+  build-depends:       base >=4.10 && <4.11
+  default-language:    Haskell2010
