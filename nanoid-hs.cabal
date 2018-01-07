@@ -1,6 +1,6 @@
 name:                nanoid-hs
 version:             0.1.0.0
-synopsis:            Haskell port of nanoid pakcage
+synopsis:            A tiny, secure, URL-friendly, unique string ID generator
 homepage:            https://github.com/4e6/nanoid-hs#readme
 license:             MIT
 license-file:        LICENSE
@@ -12,10 +12,10 @@ extra-source-files:  ChangeLog.md
 cabal-version:       >=1.10
 
 library
-  build-depends:       base >=4.10 && <5
-                     , control-monad-loop >=0.1 && <1
-                     , random             >=1   && <2
-                     , transformers       >=0.5 && <1
-                     , transformers-base  >=0.4 && <1
+  build-depends:       base               >=4.10 && <5
+                     , control-monad-loop >=0.1  && <1
+                     , random             >=1    && <2
+                     , transformers       >=0.5  && <1
+                     , transformers-base  >=0.4  && <1
   default-language:    Haskell2010
   exposed-modules:     Nanoid

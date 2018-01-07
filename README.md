@@ -3,7 +3,7 @@
 Nanoid package is an implementation of [ai/nanoid](https://github.com/ai/nanoid)
 in Haskell.
 
-> A tiny, secure, URL-friendly, unique string ID generator for JavaScript.
+> Nanoid is a tiny, secure, URL-friendly, unique string ID generator
 
 ```haskell
 $ cabal new-repl
@@ -13,12 +13,10 @@ Ok, one module loaded.
 *Nanoid> generate [10..20] url 5
 "89abc"
 
-*Nanoid> import System.Random
-
-*Nanoid System.Random> generate <$> randoms <$> newStdGen <*> pure "abcd" <*> pure 4
+*Nanoid> generate <$> randomsIO <*> pure "abcd" <*> pure 4
 "dabb"
 
-*Nanoid System.Random> generate <$> randoms <$> newStdGen <*> pure url <*> pure 21
+*Nanoid> generate <$> randomsIO <*> pure url <*> pure 21
 "1xfg7ez1WL7r6jinFzTsy"
 ```
 
