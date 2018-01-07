@@ -1,28 +1,40 @@
 # nanoid-hs
 
-Nanoid package is a copy of [ai/nanoid](https://github.com/ai/nanoid) JS package.
+Nanoid package is an implementation of [ai/nanoid](https://github.com/ai/nanoid)
+in Haskell.
 
-The article is written as a documentation to [Nanoid.hs](Nanoid.hs) module,
-you can read the source and run examples in the REPL.
+> A tiny, secure, URL-friendly, unique string ID generator for JavaScript.
 
-It was inspired by the recent ai's twitter post and serves purely
-educational purposes. I noticed that the idea that imperative program can be
-replicated in a purely functional language might be unclear. And 'ai/nanoid'
-package might be a good example of a useful real-world program translated to a
-purely functional language.
+```js
+var nanoid = require('nanoid')
+model.id = nanoid() //=> "Uakgb_J5m9g~0JDMbcJqLJ"
+```
 
-The technique which I used to translate the imperative program into
-a functional one was described in
+The core nanoid
+[generator](https://github.com/ai/nanoid/blob/f2dc36fc83785f0d132f364769cb6e0f6ba7f083/format.js)
+function is the point of our interest. The goal of this project is not to
+implement the UID generator in Haskell, but to show that purely functional
+language is as practical as an imperative one, and the translation of an
+imperative algorithm to a purely functional language is a straightforward and
+almost mechanical process.
+
+This package is written as an article, in a documentation to the
+[Nanoid.hs](Nanoid.hs) module, and serves purely educational purposes. I
+choosed `ai/nanoid` because it is a useful real-world program, it is small, it
+has mutability and side effects, and it already has been ported to [other
+programming lanugages](https://github.com/ai/nanoid#other-programming-languages).
+
+The technique which I used is not new and was described in
 [Lazy functional state threads](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.144.2237)
 paper.
 
 You can also check [Imperative Hakskell](http://vaibhavsagar.com/blog/2017/05/29/imperative-haskell/)
-blog post on this topic illustrated with classic CS algorightms.
+blog post on this topic. It uses the same approach to convert classic CS algorightms to Haskell.
 
 ## Build
 
-All the examples below are runnable from GHCi REPL provided by the awesome
-Cabal new build commands.
+All the examples are runnable from GHCi REPL provided by the awesome
+Cabal new build infrastructure.
 
 ```
 $ cabal new-repl
@@ -35,7 +47,7 @@ Ok, one module loaded.
 *Nanoid>
 ```
 
-You can also generate HTML version as a package documentation with:
+Generate HTML version of the package documentation with:
 
 ```
 $ cabal new-haddock
