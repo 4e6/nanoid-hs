@@ -53,7 +53,7 @@ import System.Random (randomIO)
 -- |
 -- = Stateful generator function
 --
--- Function 'generatorIO' is an implementation of the ai/nanoid JS function in
+-- Function 'generateIO' is an implementation of the ai/nanoid JS function in
 -- Haskell
 -- <https://github.com/ai/nanoid/blob/f2dc36fc83785f0d132f364769cb6e0f6ba7f083/format.js>
 -- The idea is to show how imperative algorithm can be replicated in a
@@ -80,7 +80,7 @@ import System.Random (randomIO)
 --   * if without else clause - 'when' function
 --
 -- When implemented in Haskell we immediately see the problem with
--- 'generatorIO'. It is a God-function with infinite powers, it runs in IO and
+-- 'generateIO'. It is a God-function with infinite powers, it runs in IO and
 -- is able to do arbitrary effects (even to launch the missiles, as they
 -- say). It is definitely overpowered for a tiny UID generator. Moreover, it is
 -- hard to tell what is happening inside because there is a lot of manipulations
@@ -95,16 +95,16 @@ import System.Random (randomIO)
 --
 -- To eliminate @IO@ we can leverage the laziness feature of the Haskell
 -- language and pass an infinite stream of integers instead. This takes us
--- forward to the 'generatorST' implementation.
+-- forward to the 'generateST' implementation.
 --
 -- == Example
 --
 -- Module "Nanoid" provides 'randomN' and 'url' helpers for convenience
 --
--- >>> generatorIO randomN url 21
+-- >>> generateIO randomN url 21
 -- "bd3xzujGEwjzP_91sXIf2"
-generatorIO :: (Int -> IO [Int]) -> String -> Int -> IO String
-generatorIO random alphabet size = do                                       --  function (random, alphabet, size)
+generateIO :: (Int -> IO [Int]) -> String -> Int -> IO String
+generateIO random alphabet size = do                                       --  function (random, alphabet, size)
   let mask = (2 `rotate`
         truncate (log (fromIntegral (length alphabet - 1)) / log 2.0)) - 1  --  var mask = (2 << Math.log(alphabet.length - 1) / Math.LN2) - 1
   let step = ceiling (1.6 * fromIntegral mask * fromIntegral size
@@ -159,7 +159,7 @@ url = "_~0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 --     ...
 -- @
 --
--- 'generatorST' function is much better than 'generatorIO' because we are sure
+-- 'generateST' function is much better than 'generateIO' because we are sure
 -- it cannot do anything except returning the result, cannot affect the outside
 -- world. The algorithm itself is still a mess, but due to the referential
 -- transparency we can reason about it. We can forget the implementation details
@@ -169,7 +169,7 @@ url = "_~0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 -- a conclusion I wanted to come up with more idiomatic Haskell program that
 -- implements the same algorithm. Soon I realized that this program is just a
 -- pipeline that filters and transforms the input stream of integers. Here we
--- transition to the 'generator' function.
+-- transition to the 'generate' function.
 --
 -- == Example
 --
@@ -185,10 +185,10 @@ url = "_~0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 -- >>> :t randoms <$> getStdGen
 -- randoms <$> getStdGen :: Random a => IO [a]
 --
--- >>> (\rs -> generatorST rs url 21) <$> randoms <$> getStdGen
+-- >>> (\rs -> generateST rs url 21) <$> randoms <$> getStdGen
 -- "u~0IlMNwisEzQGF2jJ_7T"
-generatorST :: [Int] -> String -> Int -> String
-generatorST randoms alphabet size = runST $ do                              --  function (randoms, alphabet, size)
+generateST :: [Int] -> String -> Int -> String
+generateST randoms alphabet size = runST $ do                              --  function (randoms, alphabet, size)
   let mask = (2 `rotate`
         truncate (log (fromIntegral (length alphabet - 1)) / log 2.0)) - 1  --  const mask = (2 << Math.log(alphabet.length - 1) / Math.LN2) - 1
   let step = ceiling (1.6 * fromIntegral mask * fromIntegral size
@@ -218,7 +218,7 @@ generatorST randoms alphabet size = runST $ do                              --  
 -- = Pure generator function
 --
 -- After our observation we ended up with a simple sieve algorithm on a stream
--- of @randoms@. Compared to 'generatorST' this program lacks the state and we
+-- of @randoms@. Compared to 'generateST' this program lacks the state and we
 -- can call it pure. Now looking at the code it is much easier to tell that this
 -- function is doing, because the whole program is a composition of three
 -- functions 'filter', 'map', and 'take'.
@@ -232,16 +232,16 @@ generatorST randoms alphabet size = runST $ do                              --  
 --
 -- As a sanity check, to verify that we preserve the algorithm after all the
 -- transformations, we test that all functions return the same result on the
--- identical inputs. We can notice here that 'generatorIO' is also an idempotent
+-- identical inputs. We can notice here that 'generateIO' is also an idempotent
 -- function, but that wasn't clear from the beginning given its type signature.
 --
--- >>> generatorIO (const $ pure [100..200]) url 21
+-- >>> generateIO (const $ pure [100..200]) url 21
 -- "yzABCDEFGHIJKLMNOPQRS"
 --
--- >>> generatorST [100..200] url 21
+-- >>> generateST [100..200] url 21
 -- "yzABCDEFGHIJKLMNOPQRS"
 --
--- >>> generator [100..200] url 21
+-- >>> generate [100..200] url 21
 -- "yzABCDEFGHIJKLMNOPQRS"
 --
 -- = Summary
@@ -251,8 +251,8 @@ generatorST randoms alphabet size = runST $ do                              --  
 -- counterpart. The process was straightforward and almost mechanical. Second,
 -- using the features of the Haskell language, after the two iterations we ended
 -- up with highly readable pure function which implements the same algorithm.
-generator :: [Int] -> String -> Int -> String
-generator randoms alphabet size = take size $ go randoms
+generate :: [Int] -> String -> Int -> String
+generate randoms alphabet size = take size $ go randoms
   where
     mask = (2 `rotate` truncate (log (fromIntegral (length alphabet - 1)) / log 2.0)) - 1
     go   = map (\i -> alphabet !! (i .&. mask))

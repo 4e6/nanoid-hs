@@ -5,9 +5,21 @@ in Haskell.
 
 > A tiny, secure, URL-friendly, unique string ID generator for JavaScript.
 
-```js
-var nanoid = require('nanoid')
-model.id = nanoid() //=> "Uakgb_J5m9g~0JDMbcJqLJ"
+```haskell
+$ cabal new-repl
+GHCi, version 8.2.2: http://www.haskell.org/ghc/  :? for help
+[1 of 1] Compiling Nanoid           ( Nanoid.hs, interpreted )
+Ok, one module loaded.
+*Nanoid> generate [10..20] url 5
+"89abc"
+
+*Nanoid> import System.Random
+
+*Nanoid System.Random> generate <$> randoms <$> newStdGen <*> pure "abcd" <*> pure 4
+"dabb"
+
+*Nanoid System.Random> generate <$> randoms <$> newStdGen <*> pure url <*> pure 21
+"1xfg7ez1WL7r6jinFzTsy"
 ```
 
 The core nanoid
@@ -18,7 +30,7 @@ language is as practical as an imperative one, and the translation of an
 imperative algorithm to a purely functional language is a straightforward and
 almost mechanical process.
 
-This package is written as an article, in a documentation to the
+This package is written as an article in a documentation to the
 [Nanoid.hs](Nanoid.hs) module, and serves purely educational purposes. I
 choosed `ai/nanoid` because it is a useful real-world program, it is small, it
 has mutability and side effects, and it already has been ported to [other
