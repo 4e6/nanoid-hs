@@ -13,13 +13,14 @@
 -- >>> generate <$> randomsIO <*> pure url <*> pure 21
 -- "1xfg7ez1WL7r6jinFzTsy"
 --
--- The core nanoid generator function
--- <https://github.com/ai/nanoid/blob/f2dc36fc83785f0d132f364769cb6e0f6ba7f083/format.js>
--- is the point of our interest. The goal of this project is not to implement
--- the UID generator in Haskell, but to show that purely functional language is
--- as practical as an imperative one, and the translation of an imperative
--- algorithm to a purely functional language is a straightforward and almost
--- mechanical process.
+-- The core nanoid
+-- [generator](https://github.com/ai/nanoid/blob/f2dc36fc83785f0d132f364769cb6e0f6ba7f083/format.js)
+-- function is the point of our interest. The goal of this project is
+-- not to implement the UID generator in Haskell, but to show that
+-- purely functional language is as practical as an imperative one,
+-- and the translation of an imperative algorithm to a purely
+-- functional language is a straightforward and almost mechanical
+-- process.
 --
 -- The technique which I used is not new and was described in
 -- [Lazy functional state threads](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.144.2237)
@@ -40,16 +41,20 @@ import qualified System.Random as RNG
 -- |
 -- = Stateful generator
 --
--- Function 'generateIO' is an implementation of the ai/nanoid JS function in
--- Haskell
--- <https://github.com/ai/nanoid/blob/f2dc36fc83785f0d132f364769cb6e0f6ba7f083/format.js>
--- The idea is to show how imperative algorithm can be replicated in a
--- functional language using ideas from the paper, and my goal here was to achieve
--- line-to-line correspondence. There's one change compared to JS function when
--- we are breaking loop twice instead of an early return,
+-- Function 'generateIO' is an implementation of the ai/nanoid [JS
+-- function](https://github.com/ai/nanoid/blob/f2dc36fc83785f0d132f364769cb6e0f6ba7f083/format.js)
+-- in Haskell The idea is to show how imperative algorithm can be replicated in
+-- a functional language using ideas from the paper, and my goal here was to
+-- achieve line-to-line correspondence. There's one change compared to JS
+-- function when we are breaking loop twice instead of an early return,
 --
 -- @
---     if (id.length === size) break
+--        ...
+--          if (id.length === size) break
+--        }
+--       if (id.length === size) break
+--     }
+--     return id
 -- @
 --
 -- but I'm okay with it as far as it doesn't change the computational
@@ -57,7 +62,7 @@ import qualified System.Random as RNG
 --
 -- You can see that every line of Haskell code has its JS counterpart in the
 -- comments. To achieve this lines correspondence I ended up using
--- 'control-monad-loop' package which offers loop constructions with early
+-- `control-monad-loop' package which offers loop operators with early
 -- termination. Function runs in @IO@ and uses 'liftIO' to glue custom
 -- constructions from `control-monad-loop' package. The early return was the
 -- only difficulty. The rest of the translation was pretty straightforward.
@@ -91,7 +96,7 @@ import qualified System.Random as RNG
 -- >>> generateIO randomnIO url 21
 -- "bd3xzujGEwjzP_91sXIf2"
 generateIO :: (Int -> IO [Int]) -> String -> Int -> IO String
-generateIO random alphabet size = do                                       --  function (random, alphabet, size)
+generateIO random alphabet size = do                                        --  function (random, alphabet, size)
   let mask = (2 `rotate`
         truncate (log (fromIntegral (length alphabet - 1)) / log 2.0)) - 1  --  var mask = (2 << Math.log(alphabet.length - 1) / Math.LN2) - 1
   let step = ceiling (1.6 * fromIntegral mask * fromIntegral size
@@ -176,7 +181,7 @@ url = "_~0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 -- >>> (\rs -> generateST rs url 21) <$> randoms <$> getStdGen
 -- "u~0IlMNwisEzQGF2jJ_7T"
 generateST :: [Int] -> String -> Int -> String
-generateST randoms alphabet size = runST $ do                              --  function (randoms, alphabet, size)
+generateST randoms alphabet size = runST $ do                               --  function (randoms, alphabet, size)
   let mask = (2 `rotate`
         truncate (log (fromIntegral (length alphabet - 1)) / log 2.0)) - 1  --  const mask = (2 << Math.log(alphabet.length - 1) / Math.LN2) - 1
   let step = ceiling (1.6 * fromIntegral mask * fromIntegral size
@@ -208,9 +213,10 @@ randomsIO = RNG.randoms <$> RNG.getStdGen
 -- |
 -- = Pure generator
 --
--- After our observation, we ended up with a simple sieve algorithm on a stream
--- of @randoms@. Compared to 'generateST' this program lacks the state, and we
--- can call it pure. Now looking at the code, it is much easier to tell that
+-- After our observation that generator is just a transformation pipeline of an
+-- input stream of integers, we ended up with a simple sieve algorithm on a
+-- @randoms@ stream. Compared to 'generateST' this program lacks the state, and
+-- we can call it pure. Now looking at the code, it is much easier to tell that
 -- this function is doing, because the whole program is a composition of three
 -- functions 'filter', 'map' and 'take'.
 --
@@ -239,9 +245,11 @@ randomsIO = RNG.randoms <$> RNG.getStdGen
 --
 -- I'm happy that we achieved all the goals set. First, we were able to
 -- translate every line of the imperative algorithm into a functional
--- counterpart. The process was straightforward and almost mechanical. Second,
--- using the features of the Haskell language, after the two iterations we ended
--- up with a highly readable pure function which implements the same algorithm.
+-- counterpart. The only difficulty was the early return from a function, but
+-- other than that the process was smooth and almost mechanical. Second, using
+-- the features of the Haskell language we eliminated 'IO' and then the state,
+-- and after the two iterations we ended up with a small, readable pure function
+-- which implements the same algorithm.
 generate :: [Int] -> String -> Int -> String
 generate randoms alphabet size = take size $ go randoms
   where
