@@ -23,10 +23,12 @@ Ok, one module loaded.
 The core nanoid
 [generator](https://github.com/ai/nanoid/blob/f2dc36fc83785f0d132f364769cb6e0f6ba7f083/format.js)
 function is the point of our interest. The goal of this project is not to
-implement the UID generator in Haskell, but to show that purely functional
-language is as practical as an imperative one, and the translation of an
-imperative algorithm to a purely functional language is a straightforward and
-almost mechanical process.
+implement a UID generator in Haskell, but to replicate the original nanoid's
+algorithm. We'll see how to express imperative language constructs like
+variables, mutation, and for-loops in Haskell and get additional guarantees
+about the stateful program. The ultimate idea is to show that functional
+language can be as practical as an imperative one, but with a much higher
+expressiveness that allows writing programs in different styles.
 
 This package is written as an article in a documentation to the
 [Nanoid.hs](Nanoid.hs) module, and serves purely educational purposes. I

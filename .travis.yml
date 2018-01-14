@@ -1,0 +1,20 @@
+language: generic
+
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.cabal/store
+
+compiler: "ghc-8.2.2"
+addons: {apt: {packages: [cabal-install-head,ghc-8.2.2], sources: [hvr-ghc]}}
+
+install:
+  - PATH=/opt/ghc/bin:$HOME/local/bin:$PATH
+  - cabal --version
+  - travis_retry cabal update -v
+
+script:
+  - cabal new-build
+  - rm -rf dist-newstyle
+  - cabal new-haddock
