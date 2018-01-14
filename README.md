@@ -1,5 +1,7 @@
 # nanoid-hs
 
+[![Build Status](https://travis-ci.org/4e6/nanoid-hs.svg?branch=master)](https://travis-ci.org/4e6/nanoid-hs)
+
 Nanoid package is an implementation of [ai/nanoid](https://github.com/ai/nanoid)
 in Haskell.
 
